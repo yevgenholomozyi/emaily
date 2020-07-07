@@ -25,18 +25,13 @@ passport.use(
       proxy: true
     },
     
-    (accessToken, refreshToken, profile, done) => {
-      User.findOne({googleId: profile.id})
-      .then(existingUser => { // existingUser in mongoose model instance
+    async (accessToken, refreshToken, profile, done) => {
+      const existingUser = await User.findOne({googleId: profile.id}) // existingUser in mongoose model instance
         if (existingUser) {
-          done(null, existingUser) // there is no errors, the user is found
-        } else {
-          new User({ googleId: profile.id }) // googleId
-          .save()
-          .then(user => done(null, user))
-        }  
-      }
-      )
+          return done(null, existingUser) // there is no errors, the user is found
+        } 
+        const  user = await new User({ googleId: profile.id }).save(); // googleId
+        done(null, user);
     }
   )
 );
