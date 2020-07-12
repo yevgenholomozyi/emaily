@@ -5,6 +5,7 @@ const passport = require('passport');
 const keys = require('./config/keys');
 const bodyParser = require('body-parser'); // express does not parse a payload by defeault. Thus, it required a seperate library to do so
 require('./models/User'); // connection to BD
+require('./models/Survey');
 require('./services/passport'); // logic of behavior for authentication
 
 mongoose.connect(keys.mongoURI);
@@ -23,12 +24,13 @@ app.use(passport.session());
 
 require('./routes/authRoutes')(app);
 require('./routes/billingsRoutes')(app);
+require('./routes/surveyRoutes')(app);
 
 if(process.env.NODE_ENV === 'production') {
     // express will serve up production assets like main.js or main.css file if it knows the route
     app.use(express.static('client/build'));
 
-    // express will redirect to index.html if the route unknown
+    // express will redirect to index.html if the route is unknown
     const path = require('path');
     app.get('*', (req, res) => {
         res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
